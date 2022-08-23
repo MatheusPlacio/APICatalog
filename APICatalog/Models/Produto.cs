@@ -19,7 +19,7 @@ public class Produto
     [StringLength(300)]
     public string? Descricao { get; set; }
 
-
+    //
     [Required]
     [Column(TypeName = "decimal(10,2)")]
     public decimal Preco { get; set; }
