@@ -2,6 +2,7 @@
 using APICatalog.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace APICatalog.Controllers;
 
@@ -30,7 +31,7 @@ public class ProdutosController : ControllerBase
         }       
     }
 
-    [HttpGet("{id:int}")] //Name="ObterProduto"
+    [HttpGet("{id:int}", Name = "ObterProduto")] //Name="ObterProduto"
     public ActionResult<Produto> Get(int id)
     {
         var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
@@ -48,8 +49,8 @@ public class ProdutosController : ControllerBase
     public ActionResult Post(Produto produto)
     {
         if (produto is null)
-            return BadRequest();
-        
+            return BadRequest(); // Erro 404
+
         _context.Produtos.Add(produto);
         _context.SaveChanges();
 
@@ -58,4 +59,35 @@ public class ProdutosController : ControllerBase
             //new { id = produto.ProdutoId }, produto);
     }
 
+    [HttpPut("{id:int}")]
+    public ActionResult Put(int id, Produto produto)
+    {
+       
+        if (id != produto.ProdutoId)
+        {
+            return BadRequest(); // Erro 404
+        }
+
+        _context.Entry(produto).State = EntityState.Modified;
+        _context.SaveChanges();
+
+        return Ok(produto);
+    }
+
+    [HttpDelete("{id:int}")]
+    public ActionResult Delete(int id)
+    {
+       var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+
+        if (produto is null)
+        {
+            return BadRequest("Produto não localizado..."); // Erro 404
+        }
+
+        _context.Produtos.Remove(produto);
+        _context.SaveChanges();
+
+        return Ok(produto);
+    }
+   
 }
