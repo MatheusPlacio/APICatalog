@@ -18,9 +18,9 @@ public class ProdutosController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<Produto>> Get()
+    public async Task<ActionResult<List<Produto>>> Get()
     {
-        var produtos = _context.Produtos.ToList();
+        var produtos = await _context.Produtos.AsNoTracking().ToListAsync();
         if(produtos is null)
         {
             return NotFound("Produtos não encontrados...");
@@ -32,9 +32,9 @@ public class ProdutosController : ControllerBase
     }
 
     [HttpGet("{id:int}", Name = "ObterProduto")] //Name="ObterProduto"
-    public ActionResult<Produto> Get(int id)
+    public async Task<ActionResult<Produto>> Get(int id)
     {
-        var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+        var produto = await _context.Produtos.FirstOrDefaultAsync(p => p.ProdutoId == id);
         if(produto is null)
         {
             return NotFound("Produto não encontrado..."); // Notfound retorna 404
@@ -52,7 +52,7 @@ public class ProdutosController : ControllerBase
             return BadRequest(); // Erro 404
 
         _context.Produtos.Add(produto);
-        _context.SaveChanges();
+        _context.SaveChangesAsync();
 
         return Ok();
             //new CreatedAtRouteResult("ObterProduto",
@@ -77,7 +77,7 @@ public class ProdutosController : ControllerBase
     [HttpDelete("{id:int}")]
     public ActionResult Delete(int id)
     {
-       var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+        var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
 
         if (produto is null)
         {
@@ -90,4 +90,6 @@ public class ProdutosController : ControllerBase
         return Ok(produto);
     }
    
+      
+    
 }

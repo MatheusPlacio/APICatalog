@@ -3,6 +3,7 @@ using APICatalog.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace APICatalog.Controllers;
 
@@ -17,41 +18,44 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpGet("produtos")]
-    public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
+    //Visibilidade - tipo de retorno - nome do método 
+    public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos(string nomeProduto)
     {
-        return _context.Categorias.Include(p => p.Produtos).ToList();
+         return await _context.Categorias
+                .Include(c => c.Produtos.Where(p => p.Nome.Contains(nomeProduto))) 
+                .ToListAsync();        
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<Categoria>> Get()
+    public async Task<ActionResult<IEnumerable<Categoria>>> Get()
     {
-        var categoria = _context.Categorias.ToList();
+        var categoria = _context.Categorias.AsNoTracking().ToListAsync();
         if (categoria is null)
         {
             return BadRequest();
         }
         else
         {
-            return Ok(categoria);
+            return await categoria;
         }        
     }
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
-    public ActionResult<Categoria> Get(int id)
+    public async Task<ActionResult<Categoria>> Get(int id)
     {
-        var categoria = _context.Categorias.FirstOrDefault(p => p.CategoriaId == id);
+        var categoria = _context.Categorias.FirstOrDefaultAsync(p => p.CategoriaId == id);
         if (categoria is null)
         {
             return NotFound("Categoria não encontrada...");
         }
         else
         {
-            return Ok(categoria);
+            return await categoria;
         }
     }
 
     [HttpPost]
-    public ActionResult Post(Categoria categoria)
+    public ActionResult Post(Categoria categoria) // Um objeto complexo é um tipo de var que tem varios tipos dentros
     {
         _context.Categorias.Add(categoria);
         _context.SaveChanges();
