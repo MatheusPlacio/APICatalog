@@ -12,7 +12,7 @@ namespace APICatalog.Controllers;
 public class CategoriasController : ControllerBase
 {
     private readonly APICatalogContext _context;
-        public CategoriasController(APICatalogContext context)
+    public CategoriasController(APICatalogContext context)
     {
         _context = context;
     }
@@ -21,9 +21,9 @@ public class CategoriasController : ControllerBase
     //Visibilidade - tipo de retorno - nome do método 
     public async Task<ActionResult<IEnumerable<Categoria>>> GetCategoriasProdutos(string nomeProduto)
     {
-         return await _context.Categorias
-                .Include(c => c.Produtos.Where(p => p.Nome.Contains(nomeProduto))) 
-                .ToListAsync();        
+        return await _context.Categorias
+               .Include(c => c.Produtos.Where(p => p.Nome.Contains(nomeProduto)))
+               .ToListAsync();
     }
 
     [HttpGet]
@@ -37,7 +37,7 @@ public class CategoriasController : ControllerBase
         else
         {
             return await categoria;
-        }        
+        }
     }
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
@@ -99,6 +99,7 @@ public class CategoriasController : ControllerBase
             return Ok(categorias);
         }
     }
+
 
 
 }
